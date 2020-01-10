@@ -2520,7 +2520,7 @@ static int debug_get_ssoc_gdf(void *data, u64 *val)
 	return 0;
 }
 
-DEFINE_SIMPLE_ATTRIBUTE(debug_ssoc_gdf_fops, debug_get_ssoc_gdf, NULL, "%u\n");
+DEFINE_SIMPLE_ATTRIBUTE(debug_ssoc_gdf_fops, debug_get_ssoc_gdf, NULL, "%llu\n");
 
 
 static int debug_get_ssoc_uic(void *data, u64 *val)
@@ -2530,7 +2530,7 @@ static int debug_get_ssoc_uic(void *data, u64 *val)
 	return 0;
 }
 
-DEFINE_SIMPLE_ATTRIBUTE(debug_ssoc_uic_fops, debug_get_ssoc_uic, NULL, "%u\n");
+DEFINE_SIMPLE_ATTRIBUTE(debug_ssoc_uic_fops, debug_get_ssoc_uic, NULL, "%llu\n");
 
 static int debug_get_ssoc_rls(void *data, u64 *val)
 {
@@ -2565,8 +2565,21 @@ static int debug_set_ssoc_rls(void *data, u64 val)
 }
 
 DEFINE_SIMPLE_ATTRIBUTE(debug_ssoc_rls_fops,
-				debug_get_ssoc_rls, debug_set_ssoc_rls, "%u\n");
+				debug_get_ssoc_rls, debug_set_ssoc_rls, "%llu\n");
 
+static int debug_force_psy_update(void *data, u64 val)
+{
+	struct batt_drv *batt_drv = (struct batt_drv *)data;
+
+	if (!batt_drv->psy)
+		return -EINVAL;
+
+	power_supply_changed(batt_drv->psy);
+	return 0;
+}
+
+DEFINE_SIMPLE_ATTRIBUTE(debug_force_psy_update_fops,
+				NULL, debug_force_psy_update, "%llu\n");
 
 static ssize_t debug_get_ssoc_uicurve(struct file *filp,
 					   char __user *buf,
